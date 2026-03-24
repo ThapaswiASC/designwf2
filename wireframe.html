@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Youth Account Fund Management — Wireframe</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { height: 100%; font-family: 'Courier New', Courier, monospace; background: #f2f2f2; color: #444; font-size: 13px; }
+    #app { display: flex; height: 100vh; overflow: hidden; }
+    #sidebar { width: 250px; flex-shrink: 0; background: #e8e8e8; border-right: 2px solid #999; display: flex; flex-direction: column; }
+    #main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+    #topbar { height: 54px; flex-shrink: 0; background: #e8e8e8; border-bottom: 2px solid #999; display: flex; align-items: center; padding: 0 18px; gap: 16px; justify-content: space-between; }
+    #content { flex: 1; overflow-y: auto; background: #f2f2f2; }
+    /* SIDEBAR */
+    .sb-logo { padding: 18px 20px; border-bottom: 1px dashed #999; }
+    .sb-logo-box { background: #d4d4d4; border: 1px solid #999; height: 32px; display: flex; align-items: center; padding: 0 12px; font-size: 12px; color: #444; }
+    .sb-section { padding: 14px 20px 5px; font-size: 9px; letter-spacing: .15em; text-transform: uppercase; color: #888; border-bottom: 1px dashed #b0b0b0; }
+    .nav-link { display: flex; align-items: center; gap: 8px; padding: 9px 20px; cursor: pointer; font-size: 12px; color: #888; border-left: 3px solid transparent; }
+    .nav-link:hover { background: #d4d4d4; color: #444; }
+    .nav-link.active { border-left-color: #777; background: #d4d4d4; color: #444; font-weight: bold; }
+    .sb-footer { margin-top: auto; padding: 14px 20px; border-top: 1px dashed #999; font-size: 10px; color: #888; }
+    /* TOPBAR */
+    .search-wf { flex: 1; max-width: 320px; height: 32px; background: #d4d4d4; border: 1px dashed #999; display: flex; align-items: center; padding: 0 12px; font-size: 11px; color: #888; }
+    .topbar-right { display: flex; align-items: center; gap: 10px; }
+    .notif-wf { height: 30px; width: 90px; background: #d4d4d4; border: 1px solid #999; display: flex; align-items: center; justify-content: center; font-size: 11px; color: #888; }
+    .avatar-wf { width: 32px; height: 32px; border-radius: 50%; background: #b0b0b0; border: 1px solid #999; display: flex; align-items: center; justify-content: center; font-size: 11px; color: #e8e8e8; }
+    .topbar-name { height: 14px; width: 100px; background: #d4d4d4; border: 1px solid #999; }
+    /* PAGES */
+    .page { display: none; padding: 28px 36px; }
+    .page.active { display: block; }
+    .ph { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 22px; }
+    .ph-title { height: 24px; width: 250px; background: #d4d4d4; border: 1px solid #999; margin-bottom: 7px; }
+    .ph-sub { height: 12px; width: 320px; background: #e8e8e8; border: 1px dashed #999; }
+    .bc-wf { height: 10px; width: 180px; background: #e8e8e8; border: 1px dashed #999; margin-bottom: 10px; }
+    .g2 { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 16px; margin-bottom: 18px; }
+    .card { background: #e8e8e8; border: 1px solid #999; padding: 16px 18px; margin-bottom: 16px; }
+    .card-title { height: 11px; width: 140px; background: #b0b0b0; border: 1px solid #999; margin-bottom: 12px; }
+    .stat { background: #e8e8e8; border: 1px solid #999; padding: 16px 18px; }
+    .s-label { height: 10px; width: 100px; background: #b0b0b0; border: 1px solid #999; margin-bottom: 12px; }
+    .s-val { height: 32px; width: 90px; background: #d4d4d4; border: 1px solid #999; margin-bottom: 8px; }
+    .s-sub { height: 10px; width: 130px; background: #e8e8e8; border: 1px dashed #999; }
+    .btn { display: inline-flex; align-items: center; justify-content: center; height: 32px; min-width: 90px; background: #d4d4d4; border: 1.5px solid #777; cursor: pointer; font-size: 11px; color: #444; font-family: inherit; padding: 0 14px; margin-right: 8px; }
+    .btn:hover { background: #b0b0b0; }
+    .btn.filled { background: #555; color: #e8e8e8; border-color: #777; }
+    .btn.sm { height: 26px; min-width: 50px; font-size: 10px; padding: 0 8px; }
+    .btn-grp { display: flex; gap: 8px; flex-wrap: wrap; }
+    .inp { width: 100%; height: 32px; background: #d4d4d4; border: 1px dashed #999; margin-bottom: 6px; font-size: 12px; }
+    .txa { width: 100%; height: 70px; background: #d4d4d4; border: 1px dashed #999; margin-bottom: 6px; font-size: 12px; }
+    .lbl { height: 10px; width: 100px; background: #b0b0b0; border: 1px solid #999; margin-bottom: 6px; display: inline-block; }
+    .fgrp { margin-bottom: 16px; }
+    .error-msg { color: #b00; background: #eee; border: 1px solid #b00; padding: 7px 12px; margin-top: 6px; font-size: 12px; }
+    .modal, .popup { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(240,240,240,0.85); display: flex; align-items: center; justify-content: center; z-index: 10; }
+    .modal-content, .popup-content { background: #fff; border: 2px solid #999; border-radius: 6px; width: 400px; max-width: 95vw; padding: 28px 26px; box-shadow: 0 2px 12px #bbb3; }
+    .modal-close, .popup-close { position: absolute; top: 22px; right: 30px; background: none; border: none; font-size: 18px; color: #888; cursor: pointer; }
+    .steps { display: flex; margin-bottom: 22px; }
+    .step { flex: 1; height: 34px; background: #e8e8e8; border: 1px solid #999; border-right: none; display: flex; align-items: center; justify-content: center; font-size: 11px; color: #888; }
+    .step:last-child { border-right: 1px solid #999; }
+    .step.active { background: #555; color: #e8e8e8; font-weight: bold; }
+    .step.done { background: #d4d4d4; color: #444; font-weight: bold; }
+    .activity-row { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px dashed #999; }
+    .activity-row:last-child { border-bottom: none; }
+    .activity-label { width: 160px; background: #d4d4d4; border: 1px solid #999; height: 16px; margin-right: 16px; }
+    .activity-amount { width: 60px; background: #e8e8e8; border: 1px solid #999; height: 16px; }
+    .activity-date { width: 80px; background: #e8e8e8; border: 1px solid #999; height: 16px; margin-left: 16px; }
+    .tab-bar { display: flex; border-bottom: 2px solid #999; margin-bottom: 14px; gap: 2px; }
+    .tab { height: 34px; min-width: 110px; background: #e8e8e8; border: 1px solid #999; border-bottom: none; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 11px; color: #888; padding: 0 14px; }
+    .tab:hover { background: #d4d4d4; }
+    .tab.active { background: #d4d4d4; color: #444; font-weight: bold; border-bottom: 2px solid #e8e8e8; }
+    @media (max-width: 900px) { #sidebar { width: 140px; } .ph-title, .sb-logo-box { width: 120px; } }
+  </style>
+</head>
+<body>
+<div id="app">
+  <!-- Sidebar -->
+  <nav id="sidebar">
+    <div class="sb-logo">
+      <div class="sb-logo-box">[ LOGO — BankApp ]</div>
+    </div>
+    <div class="sb-section">Parent Portal</div>
+    <div class="nav-link active" onclick="show('dashboard', this)">Youth Account Dashboard</div>
+    <div class="nav-link" onclick="show('fund-transfer', this)">Fund Transfer</div>
+    <div class="nav-link" onclick="show('limit-edit', this)">Edit Spending Limit</div>
+    <div class="nav-link" onclick="show('activity', this)">Activity</div>
+    <div class="nav-link" onclick="show('confirmation', this)">Confirmation</div>
+    <div class="nav-link" onclick="show('success', this)">Success State</div>
+    <div class="nav-link" onclick="show('error-inline', this)">Inline Error</div>
+    <div class="nav-link" onclick="show('error-popup', this)">Error Pop-up</div>
+    <div class="sb-footer">
+      <div>BankApp v1.0</div>
+      <div>© 2024 BankApp</div>
+    </div>
+  </nav>
+  <!-- Main -->
+  <div id="main">
+    <!-- Topbar -->
+    <div id="topbar">
+      <div class="search-wf">[ Search box ________________________ ]</div>
+      <div class="topbar-right">
+        <div class="notif-wf">[ Bell / Notif ]</div>
+        <div class="avatar-wf">PG</div>
+        <div class="topbar-name">[ Profile ]</div>
+      </div>
+    </div>
+    <div id="content">
+      <!-- 1.0 Youth Account Dashboard -->
+      <div class="page active" id="dashboard">
+        <div class="ph">
+          <div>
+            <div class="ph-title">[ Youth Account Dashboard ]</div>
+            <div class="ph-sub">[ Overview, balance, quick actions ]</div>
+          </div>
+          <div>
+            <button class="btn" onclick="show('fund-transfer', document.querySelectorAll('.nav-link')[1])">[ + Add Funds ]</button>
+            <button class="btn" onclick="show('limit-edit', document.querySelectorAll('.nav-link')[2])">[ Manage Limits ]</button>
+            <button class="btn" onclick="show('activity', document.querySelectorAll('.nav-link')[3])">[ View Activity ]</button>
+          </div>
+        </div>
+        <div class="g2">
+          <div class="stat">
+            <div class="s-label">[ Current Balance ]</div>
+            <div class="s-val">$[ XXXX.XX ]</div>
+            <div class="s-sub">[ Updated just now ]</div>
+          </div>
+          <div class="stat">
+            <div class="s-label">[ Weekly Limit ]</div>
+            <div class="s-val">$[ XXX.XX ]</div>
+            <div class="s-sub">[ Edit Limit ]</div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title">[ Recent Activity ]</div>
+          <div class="activity-row"><div class="activity-label">[ Transaction 1 ]</div><div class="activity-amount">$XX.XX</div><div class="activity-date">[ Date ]</div></div>
+          <div class="activity-row"><div class="activity-label">[ Transaction 2 ]</div><div class="activity-amount">$XX.XX</div><div class="activity-date">[ Date ]</div></div>
+          <div class="activity-row"><div class="activity-label">[ Transaction 3 ]</div><div class="activity-amount">$XX.XX</div><div class="activity-date">[ Date ]</div></div>
+          <div style="margin-top: 10px;">
+            <button class="btn sm" onclick="show('activity', document.querySelectorAll('.nav-link')[3])">[ View All Activity ]</button>
+          </div>
+        </div>
+      </div>
+      <!-- 2.0 Fund Transfer Modal/Page -->
+      <div class="page" id="fund-transfer">
+        <div class="ph">
+          <div>
+            <div class="ph-title">[ Fund Transfer ]</div>
+            <div class="ph-sub">[ Add money to youth account ]</div>
+          </div>
+        </div>
+        <div class="steps">
+          <div class="step active">1. Enter Details</div>
+          <div class="step">2. Confirm</div>
+          <div class="step">3. Success</div>
+        </div>
+        <form onsubmit="event.preventDefault(); show('confirmation', document.querySelectorAll('.nav-link')[4]);">
+          <div class="fgrp">
+            <label class="lbl">[ From Account ]</label><br>
+            <select class="inp">
+              <option>[ Parent Checking ]</option>
+              <option>[ Savings ]</option>
+            </select>
+          </div>
+          <div class="fgrp">
+            <label class="lbl">[ Amount ]</label><br>
+            <input class="inp" type="number" min="1" placeholder="$0.00" />
+            <div style="font-size:11px;color:#888;margin-top:2px;">[ Available: $X,XXX.XX ]</div>
+          </div>
+          <div class="fgrp">
+            <label class="lbl">[ Note (optional) ]</label><br>
+            <input class="inp" type="text" placeholder="[ e.g., Weekly allowance ]" />
+          </div>
+          <div class="btn-grp">
+            <button type="button" class="btn" onclick="show('dashboard', document.querySelectorAll('.nav-link')[0])">[ Cancel ]</button>
+            <button type="submit" class="btn filled">[ Next: Confirm → ]</button>
+          </div>
+        </form>
+      </div>
+      <!-- 3.0 Transfer Confirmation (Popup) -->
+      <div class="page" id="confirmation">
+        <div class="ph">
+          <div>
+            <div class="ph-title">[ Confirm Transfer ]</div>
+            <div class="ph-sub">[ Review details before confirming ]</div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title">[ Transfer Summary ]</div>
+          <div class="fgrp"><span class="lbl">[ From ]</span> [ Parent Checking ]</div>
+          <div class="fgrp"><span class="lbl">[ To ]</span> [ Youth Account ]</div>
+          <div class="fgrp"><span class="lbl">[ Amount ]</span> $[ XX.XX ]</div>
+          <div class="fgrp"><span class="lbl">[ Note ]</span> [ Weekly allowance ]</div>
+        </div>
+        <div class="btn-grp">
+          <button class="btn" onclick="show('fund-transfer', document.querySelectorAll('.nav-link')[1])">[ Back ]</button>
+          <button class="btn filled" onclick="show('success', document.querySelectorAll('.nav-link')[5])">[ Confirm Transfer ]</button>
+        </div>
+      </div>
+      <!-- 4.0 Success State -->
+      <div class="page" id="success">
+        <div class="ph">
+          <div>
+            <div class="ph-title">[ Success! Funds Transferred ]</div>
+            <div class="ph-sub">[ $XX.XX added to Youth Account ]</div>
+          </div>
+        </div>
+        <div class="card" style="text-align:center;">
+          <div style="font-size:36px;line-height:60px;">✓</div>
+          <div style="margin:18px 0;">[ Transfer Complete ]</div>
+          <div>[ Updated Youth Account Balance: $X,XXX.XX ]</div>
+        </div>
+        <div class="btn-grp" style="justify-content:center;">
+          <button class="btn" onclick="show('dashboard', document.querySelectorAll('.nav-link')[0])">[ Return to Dashboard ]</button>
+          <button class="btn" onclick="show('activity', document.querySelectorAll('.nav-link')[3])">[ View Activity ]</button>
+        </div>
+      </div>
+      <!-- 2.1 Inline Limit Edit -->
+      <div class="page" id="limit-edit">
+        <div class="ph">
+          <div>
+            <div class="ph-title">[ Edit Weekly Spending Limit ]</div>
+            <div class="ph-sub">[ Set or update limit for youth account ]</div>
+          </div>
+        </div>
+        <form onsubmit="event.preventDefault(); show('limit-confirm', this)">
+          <div class="fgrp">
+            <label class="lbl">[ Current Limit ]</label><br>
+            <input class="inp" type="text" value="$XX.XX" disabled />
+          </div>
+          <div class="fgrp">
+            <label class="lbl">[ New Limit ]</label><br>
+            <input class="inp" type="number" min="1" placeholder="$0.00" />
+          </div>
+          <div class="btn-grp">
+            <button type="button" class="btn" onclick="show('dashboard', document.querySelectorAll('.nav-link')[0])">[ Cancel ]</button>
+            <button type="button" class="btn filled" onclick="show('limit-confirm', document.querySelectorAll('.nav-link')[4])">[ Save Limit ]</button>
+          </div>
+        </form>
+      </div>
+      <!-- 3.0 Limit Change Confirmation (Pu.3) -->
+      <div class="page" id="limit-confirm">
+        <div class="ph">
+          <div>
+            <div class="ph-title">[ Confirm Limit Change ]</div>
+            <div class="ph-sub">[ Review and confirm new spending limit ]</div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title">[ Limit Change Summary ]</div>
+          <div class="fgrp"><span class="lbl">[ Old Limit ]</span> $[ XX.XX ]</div>
+          <div class="fgrp"><span class="lbl">[ New Limit ]</span> $[ XX.XX ]</div>
+        </div>
+        <div class="btn-grp">
+          <button class="btn" onclick="show('limit-edit', document.querySelectorAll('.nav-link')[2])">[ Back ]</button>
+          <button class="btn filled" onclick="show('dashboard', document.querySelectorAll('.nav-link')[0])">[ Confirm Limit ]</button>
+        </div>
+      </div>
+      <!-- 2.2 Activity Tab / Full Activity Page -->
+      <div class="page" id="activity">
+        <div class="ph">
+          <div>
+            <div class="ph-title">[ Youth Account Activity ]</div>
+            <div class="ph-sub">[ Recent transactions, filters, search ]</div>
+          </div>
+        </div>
+        <div class="tab-bar">
+          <div class="tab active" onclick="switchTab(this, 'activity-recent')">Recent</div>
+          <div class="tab" onclick="switchTab(this, 'activity-all')">All</div>
+        </div>
+        <div id="activity-recent">
+          <div class="activity-row"><div class="activity-label">[ Grocery Store ]</div><div class="activity-amount">$23.45</div><div class="activity-date">[ 06/01 ]</div></div>
+          <div class="activity-row"><div class="activity-label">[ School Supplies ]</div><div class="activity-amount">$12.00</div><div class="activity-date">[ 05/30 ]</div></div>
+          <div class="activity-row"><div class="activity-label">[ Online Game ]</div><div class="activity-amount">$5.00</div><div class="activity-date">[ 05/29 ]</div></div>
+        </div>
+        <div id="activity-all" style="display:none;">
+          <div class="activity-row"><div class="activity-label">[ Bookstore ]</div><div class="activity-amount">$15.00</div><div class="activity-date">[ 05/25 ]</div></div>
+          <div class="activity-row"><div class="activity-label">[ Lunch ]</div><div class="activity-amount">$7.50</div><div class="activity-date">[ 05/24 ]</div></div>
+        </div>
+        <div style="margin-top:18px;">
+          <button class="btn sm" onclick="show('dashboard', document.querySelectorAll('.nav-link')[0])">[ Back to Dashboard ]</button>
+        </div>
+      </div>
+      <!-- Er.1 Inline Error -->
+      <div class="page" id="error-inline">
+        <div class="ph">
+          <div>
+            <div class="ph-title">[ Fund Transfer — Inline Error ]</div>
+            <div class="ph-sub">[ Error: Insufficient Funds ]</div>
+          </div>
+        </div>
+        <form onsubmit="event.preventDefault(); show('confirmation', document.querySelectorAll('.nav-link')[4]);">
+          <div class="fgrp">
+            <label class="lbl">[ From Account ]</label><br>
+            <select class="inp">
+              <option>[ Parent Checking ]</option>
+              <option>[ Savings ]</option>
+            </select>
+          </div>
+          <div class="fgrp">
+            <label class="lbl">[ Amount ]</label><br>
+            <input class="inp" type="number" min="1" placeholder="$0.00" />
+            <div style="font-size:11px;color:#888;margin-top:2px;">[ Available: $100.00 ]</div>
+            <div class="error-msg">[ Error: Insufficient funds. Please enter a smaller amount or fund your account. ]</div>
+          </div>
+          <div class="fgrp">
+            <label class="lbl">[ Note (optional) ]</label><br>
+            <input class="inp" type="text" placeholder="[ e.g., Weekly allowance ]" />
+          </div>
+          <div class="btn-grp">
+            <button type="button" class="btn" onclick="show('dashboard', document.querySelectorAll('.nav-link')[0])">[ Cancel ]</button>
+            <button type="submit" class="btn filled">[ Retry ]</button>
+          </div>
+        </form>
+      </div>
+      <!-- Pu.4 Error Pop-up -->
+      <div class="page" id="error-popup">
+        <div class="ph">
+          <div>
+            <div class="ph-title">[ Fund Transfer — Error Pop-up ]</div>
+            <div class="ph-sub">[ Error: Insufficient Funds ]</div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="error-msg">[ Insufficient funds to complete this transfer. ]</div>
+          <div style="margin-top:10px;">[ Please adjust the amount or fund your account. ]</div>
+        </div>
+        <div class="btn-grp">
+          <button class="btn" onclick="show('fund-transfer', document.querySelectorAll('.nav-link')[1])">[ Retry ]</button>
+          <button class="btn" onclick="show('dashboard', document.querySelectorAll('.nav-link')[0])">[ Cancel ]</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+function show(id, el) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  document.querySelectorAll('.nav-link').forEach(n => n.classList.remove('active'));
+  if (el) el.classList.add('active');
+}
+function switchTab(el, panelId) {
+  el.parentElement.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('activity-recent').style.display = 'none';
+  document.getElementById('activity-all').style.display = 'none';
+  document.getElementById(panelId).style.display = 'block';
+}
+</script>
+<!--
+Summary Table: Step → Screen Name → File Reference → Navigates To
+| Step | Screen Name                | File Reference | Navigates To                          |
+|------|----------------------------|---------------|---------------------------------------|
+| 1.0  | Youth Account Dashboard    | dashboard     | fund-transfer, limit-edit, activity   |
+| 2.0  | Fund Transfer Modal/Page   | fund-transfer | confirmation, error-inline, dashboard |
+| 2.1  | Inline Limit Edit          | limit-edit    | limit-confirm, dashboard              |
+| 2.2  | Activity Tab/Page          | activity      | dashboard                            |
+| 3.0  | Confirmation/Success State | confirmation  | success, fund-transfer                |
+| 3.0  | Success State              | success       | dashboard, activity                   |
+| Pu.3 | Limit Change Confirmation  | limit-confirm | dashboard, limit-edit                 |
+| Er.1 | Inline Error               | error-inline  | confirmation, dashboard               |
+| Pu.4 | Error Pop-up               | error-popup   | fund-transfer, dashboard              |
+-->
+</body>
+</html>
